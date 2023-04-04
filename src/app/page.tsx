@@ -1,91 +1,109 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from './page.module.css'
+"use client";
 
-const inter = Inter({ subsets: ['latin'] })
+import { useEffect, useState } from "react";
 
+let maxTime = 0;
 export default function Home() {
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+  // const [audios, setAudios] = useState<HTMLAudioElement[]>([]);
+  const [baseAudio, setBaseAudio] = useState<string | null>(null);
+  const [audios, setAudios] = useState<string[]>([]);
+  const [status, setStatus] = useState("idle");
+
+  useEffect(() => {
+    if (baseAudio === null) return;
+
+    const baseAudioEl = document.getElementById("base-audio") as HTMLAudioElement;
+    baseAudioEl.addEventListener("playing", () => {
+      audios.forEach((audio) => {
+        console.log(audio, "play");
+        const audioEl = document.getElementById(audio) as HTMLAudioElement;
+        audioEl.currentTime = 0;
+        audioEl.play();
+      });
+    });
+
+    return () => {
+      console.log("remove");
+    };
+  }, [baseAudio, audios]);
+
+  function handleRecordAudio() {
+    const baseAudioEl = document.getElementById("base-audio") as HTMLAudioElement | null;
+    const currentTime = baseAudioEl?.currentTime ?? 0;
+
+    setStatus("waiting");
+    setTimeout(() => {
+      setStatus("recording");
+
+      recordAudio();
+    }, (maxTime - currentTime) * 1000);
+  }
+
+  function recordAudio() {
+    navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+      const mediaRecorderInstance = new MediaRecorder(stream);
+
+      const start = new Date().getTime();
+      mediaRecorderInstance.start();
+
+      if (baseAudio !== null) {
+        const currentTime = (document.getElementById("base-audio") as HTMLAudioElement).currentTime;
+        console.log("Tempo pra terminar", maxTime - currentTime);
+
+        setTimeout(() => {
+          stopRecording(mediaRecorderInstance);
+        }, (maxTime - currentTime) * 1000);
+      }
+
+      let audioChunks: Blob[] = [];
+      mediaRecorderInstance.ondataavailable = (e) => {
+        audioChunks.push(e.data);
+      };
+
+      mediaRecorderInstance.onstop = async (e) => {
+        if (baseAudio === null) {
+          maxTime = ((new Date().getTime() - start) / 1000) % 60;
+        }
+
+        const audioBlob = new Blob(audioChunks);
+        const audioUrl = URL.createObjectURL(audioBlob);
+        // const audio = new Audio(audioUrl);
+        // audio.loop = true;
+        // audio.play();
+        // setAudios([...audios, audio]);
+        if (baseAudio === null) setBaseAudio(audioUrl);
+        setAudios([...audios, audioUrl]);
+      };
+
+      setMediaRecorder(mediaRecorderInstance);
+    });
+  }
+
+  function stopRecording(mediaRecorder: MediaRecorder | null) {
+    if (mediaRecorder?.state !== "recording") return;
+
+    mediaRecorder.stop();
+    mediaRecorder.stream.getTracks().forEach((track) => {
+      track.stop();
+    });
+    setStatus("idle");
+  }
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <div>
+      <div>{status}</div>
+      <button onClick={handleRecordAudio}>PLAY</button>
+      <button onClick={() => stopRecording(mediaRecorder)}>STOP</button>
+      <div>
+        {audios.map((loop) => (
+          <audio id={loop} src={loop} controls key={loop} />
+        ))}
+
+        <div style={{ background: "blue" }}>
+          {baseAudio && <audio id="base-audio" src={baseAudio} controls muted loop autoPlay />}
         </div>
       </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-        <div className={styles.thirteen}>
-          <Image src="/thirteen.svg" alt="13" width={40} height={31} priority />
-        </div>
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://beta.nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+    </div>
+  );
 }
