@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState, memo } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as faceapi from "face-api.js";
 
 interface Props {
   onExpressionMatch: () => void;
-  status: string;
 }
 
 export default function ExpressionDetectorCam(props: Props) {
@@ -41,23 +40,9 @@ export default function ExpressionDetectorCam(props: Props) {
       });
   };
 
-  // useEffect(() => {
-  //   if (intervalDetection.current) clearInterval(intervalDetection.current);
-  //   intervalDetection.current = null;
-  //   console.log("detect", props.status);
-  //   if (props.status === "recording") {
-  //     setTimeout(() => {
-  //       detectExpressions();
-  //     }, 1000);
-  //   } else if (props.status === "idle") {
-  //     detectExpressions();
-  //   }
-  // }, [props.status]);
   useEffect(() => {
     if (intervalDetection.current) clearInterval(intervalDetection.current);
-    intervalDetection.current = null;
     detectExpressions();
-
     return () => {
       if (intervalDetection.current) clearInterval(intervalDetection.current);
     };
@@ -75,7 +60,6 @@ export default function ExpressionDetectorCam(props: Props) {
         const currentExpression = detections[0].expressions.asSortedArray()[0].expression;
         console.log(currentExpression);
         if (currentExpression === targetExpression) {
-          console.log("props.onExpression com ", props.status);
           props.onExpressionMatch();
           clearInterval(intervalDetection.current!);
         }

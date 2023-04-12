@@ -20,14 +20,12 @@ export default function Home() {
 
   const loopAudios = () => {
     audios.forEach((audio) => {
-      // console.log(audio.name, "play");
       const audioEl = document.getElementById(audio.name) as HTMLAudioElement;
       audioEl.currentTime = 0;
       audioEl.play();
     });
   };
 
-  // TODO: focus resets playing (with sound) audios
   useEffect(() => {
     if (!baseAudioRef.current) return;
 
@@ -38,27 +36,30 @@ export default function Home() {
     };
   }, [baseAudioRef.current, audios]);
 
+  function disableDelay() {
+    setDisabled(true);
+    setTimeout(() => {
+      setDisabled(false);
+    }, 1000);
+  }
+
   async function handleToggleRecordLoop() {
     if (disabled) return;
+
     console.log("status ", status);
     if (status === "idle") {
       const currentTime = baseAudioRef.current?.currentTime ?? 0;
 
-      setDisabled(true);
-      setTimeout(() => {
-        setDisabled(false);
-      }, 1000);
+      disableDelay();
+
       setStatus("waiting");
       setTimeout(() => {
         setStatus("recording");
         recordAudio();
       }, ((baseAudio?.duration ?? 0) - currentTime) * 1000);
     } else if (status === "recording") {
-      setDisabled(true);
+      disableDelay();
 
-      setTimeout(() => {
-        setDisabled(false);
-      }, 1000);
       stopRecording();
     }
     // waiting --> called when waiting, then do nothing
@@ -66,12 +67,30 @@ export default function Home() {
 
   function recordAudio() {
     navigator.mediaDevices
-      .getUserMedia({ audio: true })
+      .getUserMedia({
+        audio: {
+          echoCancellation: false, // prevent playng audios from interfering
+          noiseSuppression: true, // TODO add as option
+        },
+      })
       .then((stream) => {
         const mediaRecorderInstance = new MediaRecorder(stream);
 
         const startTime = new Date().getTime();
         mediaRecorderInstance.start();
+
+        let audioChunks: Blob[] = [];
+        mediaRecorderInstance.ondataavailable = (e) => {
+          audioChunks.push(e.data);
+        };
+
+        mediaRecorderInstance.onstop = async (e) => {
+          const duration = ((new Date().getTime() - startTime) / 1000) % 60;
+          const audioURL = URL.createObjectURL(new Blob(audioChunks, { type: mediaRecorderInstance.mimeType }));
+
+          if (!baseAudio) setBaseAudio({ audioURL, duration, name: "BASE" });
+          setAudios([...audios, { audioURL, duration, name: `AUDIO-${audios.length + 1}` }]);
+        };
 
         // schedule stopRecording
         if (baseAudio && baseAudioRef.current) {
@@ -81,19 +100,6 @@ export default function Home() {
             stopRecording();
           }, (baseAudio.duration - currentTime) * 1000);
         }
-
-        let audioChunks: Blob[] = [];
-        mediaRecorderInstance.ondataavailable = (e) => {
-          audioChunks.push(e.data);
-        };
-
-        mediaRecorderInstance.onstop = async (e) => {
-          const duration = ((new Date().getTime() - startTime) / 1000) % 60;
-          const audioURL = URL.createObjectURL(new Blob(audioChunks));
-
-          if (!baseAudio) setBaseAudio({ audioURL, duration, name: "BASE" });
-          setAudios([...audios, { audioURL, duration, name: `AUDIO-${audios.length + 1}` }]);
-        };
 
         // setMediaRecorder(mediaRecorderInstance);
         mediaRecorder.current = mediaRecorderInstance;
@@ -139,7 +145,7 @@ export default function Home() {
 
         <button onClick={() => setUseExpressionDetector(!useExpressionDetector)}>CONTROLE POR WEBCAM</button>
 
-        {useExpressionDetector && <ExpressionDetectorCam onExpressionMatch={handleToggleRecordLoop} status={status} />}
+        {useExpressionDetector && <ExpressionDetectorCam onExpressionMatch={handleToggleRecordLoop} />}
       </div>
     </div>
   );
