@@ -8,14 +8,24 @@ interface LoopAudio {
   audioURL: string;
   duration: number; // seconds
 }
+
+enum STATUS {
+  idle,
+  recording,
+  waiting,
+}
+
 export default function Home() {
-  // const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   const mediaRecorder = useRef<MediaRecorder | null>(null);
+
   const [audios, setAudios] = useState<LoopAudio[]>([]);
   const [baseAudio, setBaseAudio] = useState<LoopAudio | null>(null);
   const baseAudioRef = useRef<HTMLAudioElement | null>(null);
+
   const [useExpressionDetector, setUseExpressionDetector] = useState(false);
-  const [status, setStatus] = useState("idle");
+  const [status, setStatus] = useState<STATUS>(STATUS.idle);
+
+  const COMMAND_DELAY = 1000;
   const [disabled, setDisabled] = useState(false);
 
   const loopAudios = () => {
@@ -26,6 +36,7 @@ export default function Home() {
     });
   };
 
+  // LOOP audios controlled by baseAudio
   useEffect(() => {
     if (!baseAudioRef.current) return;
 
@@ -36,29 +47,32 @@ export default function Home() {
     };
   }, [baseAudioRef.current, audios]);
 
-  function disableDelay() {
+  // prevent the user from calling the same command (ExpressionIdentifier can call recording multiple times)
+  function temporarilyDisableCommands() {
     setDisabled(true);
+
     setTimeout(() => {
       setDisabled(false);
-    }, 1000);
+    }, COMMAND_DELAY);
   }
 
   async function handleToggleRecordLoop() {
     if (disabled) return;
 
-    console.log("status ", status);
-    if (status === "idle") {
+    if (status === STATUS.idle) {
       const currentTime = baseAudioRef.current?.currentTime ?? 0;
 
-      disableDelay();
+      temporarilyDisableCommands();
 
-      setStatus("waiting");
+      setStatus(STATUS.waiting);
+
+      // schedule the recording when the baseAudio starts looping (when baseAudio is not set, it schedules for now)
       setTimeout(() => {
-        setStatus("recording");
+        setStatus(STATUS.recording);
         recordAudio();
       }, ((baseAudio?.duration ?? 0) - currentTime) * 1000);
-    } else if (status === "recording") {
-      disableDelay();
+    } else if (status === STATUS.recording) {
+      temporarilyDisableCommands();
 
       stopRecording();
     }
@@ -92,7 +106,7 @@ export default function Home() {
           setAudios([...audios, { audioURL, duration, name: `AUDIO-${audios.length + 1}` }]);
         };
 
-        // schedule stopRecording
+        // schedule stopRecording when there is a baseAudio (max duration is baseAudio's duration)
         if (baseAudio && baseAudioRef.current) {
           const currentTime = baseAudioRef.current!.currentTime;
 
@@ -101,30 +115,33 @@ export default function Home() {
           }, (baseAudio.duration - currentTime) * 1000);
         }
 
-        // setMediaRecorder(mediaRecorderInstance);
         mediaRecorder.current = mediaRecorderInstance;
       })
       .catch(() => {
         alert("Não foi possível acessar o microfone. Garanta a permissão antes.");
-        setStatus("idle");
+        setStatus(STATUS.idle);
       });
   }
 
-  // function stopRecording(mediaRecorder: MediaRecorder | null) {
   function stopRecording() {
-    console.log("stop?", mediaRecorder.current?.state);
-    if (mediaRecorder.current?.state !== "recording") return;
+    if (mediaRecorder.current!.state !== "recording") return;
 
     mediaRecorder.current?.stop();
     mediaRecorder.current?.stream.getTracks().forEach((track) => {
       track.stop();
     });
-    setStatus("idle");
+    setStatus(STATUS.idle);
+  }
+
+  function parseStatus(status: STATUS) {
+    if (status === STATUS.idle) return "INATIVO";
+    if (status === STATUS.waiting) return "ESPERANDO";
+    if (status === STATUS.recording) return "GRAVANDO";
   }
 
   return (
     <div>
-      <h1>{status}</h1>
+      <h1>{parseStatus(status)}</h1>
       <button onClick={handleToggleRecordLoop}>RECORD</button>
       <div>
         {audios.map((loop) => (

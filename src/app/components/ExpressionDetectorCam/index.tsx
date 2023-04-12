@@ -40,14 +40,18 @@ export default function ExpressionDetectorCam(props: Props) {
       });
   };
 
+  // call detectExpressions interval timer with updated onExpressionMatch reference
   useEffect(() => {
     if (intervalDetection.current) clearInterval(intervalDetection.current);
+
     detectExpressions();
+
     return () => {
       if (intervalDetection.current) clearInterval(intervalDetection.current);
     };
   }, [props.onExpressionMatch]);
 
+  // sets intervalTimer that keeps detecting expressions
   const detectExpressions = () => {
     if (!videoRef.current) return;
 
@@ -58,11 +62,14 @@ export default function ExpressionDetectorCam(props: Props) {
 
       if (detections.length > 0) {
         const currentExpression = detections[0].expressions.asSortedArray()[0].expression;
+
         console.log(currentExpression);
+
         if (currentExpression === targetExpression) {
           props.onExpressionMatch();
           clearInterval(intervalDetection.current!);
         }
+
         setLastExpression(currentExpression);
       }
     }, 100);
