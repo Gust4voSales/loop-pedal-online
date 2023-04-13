@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ExpressionDetectorCam } from "@components/ExpressionDetectorCam";
+import { AudioPlayerCard } from "@src/components/AudioPlayerCard";
 
-interface LoopAudio {
+export interface LoopAudio {
   name: string;
   audioURL: string;
   duration: number; // seconds
@@ -147,10 +148,7 @@ export default function Home() {
       </button>
       <div>
         {audios.map((loop) => (
-          <div style={{ display: "flex", flexDirection: "column" }} key={loop.name}>
-            <span>{loop.name}</span>
-            <audio id={loop.name} src={loop.audioURL} controls />
-          </div>
+          <AudioPlayerCard audioLoop={loop} key={loop.name} />
         ))}
 
         <div style={{ background: "blue" }}>
