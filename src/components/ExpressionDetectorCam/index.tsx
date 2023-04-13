@@ -7,7 +7,7 @@ interface Props {
   onExpressionMatch: () => void;
 }
 
-export default function ExpressionDetectorCam(props: Props) {
+export function ExpressionDetectorCam(props: Props) {
   const targetExpression = "surprised";
   const [lastExpression, setLastExpression] = useState("");
   const videoRef = useRef<HTMLVideoElement | null>(null);

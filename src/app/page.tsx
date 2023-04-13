@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import ExpressionDetectorCam from "./components/ExpressionDetectorCam";
+import { ExpressionDetectorCam } from "@components/ExpressionDetectorCam";
 
 interface LoopAudio {
   name: string;
@@ -140,9 +140,11 @@ export default function Home() {
   }
 
   return (
-    <div>
+    <div className="prose">
       <h1>{parseStatus(status)}</h1>
-      <button onClick={handleToggleRecordLoop}>RECORD</button>
+      <button onClick={handleToggleRecordLoop} className="btn">
+        RECORD
+      </button>
       <div>
         {audios.map((loop) => (
           <div style={{ display: "flex", flexDirection: "column" }} key={loop.name}>
@@ -160,7 +162,9 @@ export default function Home() {
           )}
         </div>
 
-        <button onClick={() => setUseExpressionDetector(!useExpressionDetector)}>CONTROLE POR WEBCAM</button>
+        <button onClick={() => setUseExpressionDetector(!useExpressionDetector)} className="btn">
+          CONTROLE POR WEBCAM
+        </button>
 
         {useExpressionDetector && <ExpressionDetectorCam onExpressionMatch={handleToggleRecordLoop} />}
       </div>
