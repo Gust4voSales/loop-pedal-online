@@ -2,12 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import * as faceapi from "face-api.js";
+import useLoopsStore from "@stores/LoopAudio";
 
-interface Props {
-  onExpressionMatch: () => void;
-}
-
-export function ExpressionDetectorCam(props: Props) {
+export function ExpressionDetectorCam() {
+  const handleToggleRecordLoop = useLoopsStore((state) => state.handleToggleRecordLoop);
   const targetExpression = "surprised";
   const [lastExpression, setLastExpression] = useState("");
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -33,14 +31,12 @@ export function ExpressionDetectorCam(props: Props) {
         let video = videoRef.current!;
         video.srcObject = stream;
         video.play();
-        console.log("play video");
       })
       .catch((err) => {
         console.error("error:", err);
       });
   };
 
-  // call detectExpressions interval timer with updated onExpressionMatch reference
   useEffect(() => {
     if (intervalDetection.current) clearInterval(intervalDetection.current);
 
@@ -49,7 +45,7 @@ export function ExpressionDetectorCam(props: Props) {
     return () => {
       if (intervalDetection.current) clearInterval(intervalDetection.current);
     };
-  }, [props.onExpressionMatch]);
+  }, [videoRef.current]);
 
   // sets intervalTimer that keeps detecting expressions
   const detectExpressions = () => {
@@ -66,8 +62,7 @@ export function ExpressionDetectorCam(props: Props) {
         console.log(currentExpression);
 
         if (currentExpression === targetExpression) {
-          props.onExpressionMatch();
-          clearInterval(intervalDetection.current!);
+          handleToggleRecordLoop();
         }
 
         setLastExpression(currentExpression);
@@ -76,9 +71,9 @@ export function ExpressionDetectorCam(props: Props) {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", width: "fit-content", margin: "auto" }}>
-      <video ref={videoRef} height={300} width={300} muted />
-      <h2>{lastExpression}</h2>
+    <div style={{ display: "flex", flexDirection: "column", width: "fit-content" }}>
+      <video ref={videoRef} height={300} width={300} style={{ margin: 0 }} muted />
+      <h2 style={{ margin: 0 }}>{lastExpression}</h2>
     </div>
   );
 }
