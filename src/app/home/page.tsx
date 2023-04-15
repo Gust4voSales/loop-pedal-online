@@ -1,9 +1,9 @@
-import { RecordAudioCard } from "@components/RecordAudioCard";
+import { AudioRecorderCard } from "@components/AudioRecorderCard";
 
 export default function Home() {
   return (
     <div className="h-screen flex place-items-center place-content-center">
-      <RecordAudioCard />
+      <AudioRecorderCard />
     </div>
   );
 }

@@ -10,7 +10,7 @@ export type Store = {
   handleToggleRecordLoop: () => void
 }
 
-const initialState = {
+const initialState: Store = {
   audios: [],
   baseAudio: null,
   status: STATUS.idle,

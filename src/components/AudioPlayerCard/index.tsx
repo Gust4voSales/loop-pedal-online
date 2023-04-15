@@ -2,8 +2,8 @@
 
 import { SyntheticEvent, useState } from "react";
 import useToggle from "@src/hooks/useToggle";
-import { LoopAudio } from "@app/page";
 import { SpeakerSimpleHigh, SpeakerSimpleSlash } from "@phosphor-icons/react";
+import { LoopAudio } from "@stores/LoopAudio/LoopAudio";
 
 interface Props {
   audioLoop: LoopAudio;
