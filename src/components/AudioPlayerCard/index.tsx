@@ -26,7 +26,11 @@ export function AudioPlayerCard({ audioLoop }: Props) {
 
         <div className="w-full">
           <h4 className="m-0">{audioLoop.name}</h4>
-          <progress className="progress progress-primary w-full" value={currentProgress} max={audioLoop.duration} />
+          <progress
+            className="progress progress-primary w-full"
+            value={Math.ceil(currentProgress)}
+            max={audioLoop.duration}
+          />
         </div>
       </div>
 

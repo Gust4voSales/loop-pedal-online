@@ -2,26 +2,39 @@ import { create } from "zustand";
 import { subscribeWithSelector } from 'zustand/middleware'
 import { BaseAudio, LoopAudio, STATUS, handleToggleRecordLoop, syncLoopAudiosWithBase } from "./LoopAudio";
 
+export type TARGETS_EXPRESSIONS = 'surprised' | 'happy'
+
+export const EXPRESSIONS: { id: TARGETS_EXPRESSIONS, text: string }[] = [
+  {
+    id: 'surprised',
+    text: 'surpresa'
+  },
+  {
+    id: 'happy',
+    text: 'felicidade'
+  }
+]
+
 export type Store = {
   audios: LoopAudio[]
   status: STATUS
   baseAudio: BaseAudio | null
   disabled: boolean
+  targetExpression: TARGETS_EXPRESSIONS
+  setTargetExpression: (newExpression: TARGETS_EXPRESSIONS) => void
   handleToggleRecordLoop: () => void
 }
 
-const initialState: Store = {
-  audios: [],
-  baseAudio: null,
-  status: STATUS.idle,
-  disabled: false,
-  handleToggleRecordLoop,
-}
-
 const useStore = create(
-  subscribeWithSelector<Store>(
-    () => (initialState)
-  )
+  subscribeWithSelector<Store>((set) => ({
+    audios: [],
+    baseAudio: null,
+    status: STATUS.idle,
+    disabled: false,
+    targetExpression: 'surprised',
+    setTargetExpression: (newExpression) => set({ targetExpression: newExpression }),
+    handleToggleRecordLoop,
+  }))
 )
 
 // whenever the audios are updated, sync them with the base audio

@@ -3,12 +3,29 @@
 import { useEffect, useRef, useState } from "react";
 import * as faceapi from "face-api.js";
 import useLoopsStore from "@stores/LoopAudio";
+import cx from "classnames";
+import { STATUS } from "@stores/LoopAudio/LoopAudio";
 
 export function ExpressionDetectorCam() {
-  const handleToggleRecordLoop = useLoopsStore((state) => state.handleToggleRecordLoop);
-  const targetExpression = "surprised";
+  const EXPRESSIONS_EMOJIS = {
+    "": "...",
+    neutral: "😐",
+    happy: "😀",
+    sad: "☹",
+    angry: "😠",
+    fearful: "😨",
+    disgusted: "🤢",
+    surprised: "😮",
+  };
+
+  const [status, targetExpression, handleToggleRecordLoop] = useLoopsStore((state) => [
+    state.status,
+    state.targetExpression,
+    state.handleToggleRecordLoop,
+  ]);
   const [lastExpression, setLastExpression] = useState("");
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const camMediaStream = useRef<MediaStream | null>(null);
   const intervalDetection = useRef<NodeJS.Timer | null>(null);
 
   useEffect(() => {
@@ -24,16 +41,27 @@ export function ExpressionDetectorCam() {
     loadModels();
   }, []);
 
+  // cleanup function for webcam usage
+  useEffect(() => {
+    return () => {
+      camMediaStream.current?.getTracks().forEach((track) => {
+        track.stop();
+      });
+    };
+  }, [camMediaStream]);
+
   const startVideo = () => {
     navigator.mediaDevices
       .getUserMedia({ video: {} })
       .then((stream) => {
+        camMediaStream.current = stream;
         let video = videoRef.current!;
         video.srcObject = stream;
         video.play();
       })
       .catch((err) => {
         console.error("error:", err);
+        alert(err);
       });
   };
 
@@ -45,7 +73,7 @@ export function ExpressionDetectorCam() {
     return () => {
       if (intervalDetection.current) clearInterval(intervalDetection.current);
     };
-  }, [videoRef.current]);
+  }, [videoRef.current, targetExpression]);
 
   // sets intervalTimer that keeps detecting expressions
   const detectExpressions = () => {
@@ -71,9 +99,18 @@ export function ExpressionDetectorCam() {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", width: "fit-content" }}>
-      <video ref={videoRef} height={300} width={300} style={{ margin: 0 }} muted />
-      <h2 style={{ margin: 0 }}>{lastExpression}</h2>
+    <div className="relative">
+      <video
+        ref={videoRef}
+        className={cx("w-60 h-auto rounded-[--rounded-box] border-2", {
+          "border-primary": status === STATUS.recording,
+          "border-transparent": status !== STATUS.recording,
+        })}
+        muted
+      />
+      <span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-3xl">
+        {EXPRESSIONS_EMOJIS[lastExpression as keyof typeof EXPRESSIONS_EMOJIS]}
+      </span>
     </div>
   );
 }
