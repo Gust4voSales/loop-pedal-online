@@ -1,6 +1,6 @@
 "use client";
 
-import { SyntheticEvent, useState } from "react";
+import { FocusEvent, SyntheticEvent, useState } from "react";
 import useToggle from "@src/hooks/useToggle";
 import { SpeakerSimpleHigh, SpeakerSimpleSlash } from "@phosphor-icons/react";
 import { LoopAudio } from "@stores/LoopAudio/LoopAudio";
@@ -25,12 +25,11 @@ export function AudioPlayerCard({ audioLoop }: Props) {
         </button>
 
         <div className="w-full">
-          <h4 className="m-0">{audioLoop.name}</h4>
-          <progress
-            className="progress progress-primary w-full"
-            value={Math.ceil(currentProgress)}
-            max={audioLoop.duration}
+          <input
+            defaultValue={audioLoop.name}
+            className="input input-ghost px-1 h-6 w-full cursor-pointer focus:cursor-text"
           />
+          <progress className="progress progress-primary w-full" value={currentProgress} max={audioLoop.duration} />
         </div>
       </div>
 

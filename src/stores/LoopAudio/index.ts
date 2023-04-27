@@ -17,6 +17,7 @@ export const EXPRESSIONS: { id: TARGETS_EXPRESSIONS, text: string }[] = [
 
 export type Store = {
   audios: LoopAudio[]
+  audioCounter: number
   status: STATUS
   baseAudio: BaseAudio | null
   disabled: boolean
@@ -28,6 +29,7 @@ export type Store = {
 const useStore = create(
   subscribeWithSelector<Store>((set) => ({
     audios: [],
+    audioCounter: 0,
     baseAudio: null,
     status: STATUS.idle,
     disabled: false,

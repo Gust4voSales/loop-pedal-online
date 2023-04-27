@@ -3,11 +3,12 @@
 import useStore from ".";
 
 export interface LoopAudio {
+  id: string
   name: string;
   audioURL: string;
   duration: number; // seconds
 }
-export interface BaseAudio extends LoopAudio {
+export interface BaseAudio extends Omit<LoopAudio, 'name' | 'id'> {
   element: HTMLAudioElement
 }
 export enum STATUS {
@@ -69,6 +70,14 @@ function recordAudio() {
       mediaRecorder.onstop = async (e) => {
         const duration = ((new Date().getTime() - startTime) / 1000) % 60;
         const audioURL = URL.createObjectURL(new Blob(audioChunks, { type: mediaRecorder.mimeType }));
+        const audioName = `AUDIO - ${state.audioCounter + 1}`
+
+        const newState = {
+          ...state,
+          status: STATUS.idle,
+          audios: [...state.audios, { audioURL, duration, name: audioName, id: audioName }],
+          audioCounter: state.audioCounter + 1,
+        }
 
         if (!state.baseAudio) {
           const baseAudio = new Audio(audioURL)
@@ -76,17 +85,13 @@ function recordAudio() {
           baseAudio.loop = true
           baseAudio.play()
 
-          setState((state) => ({
-            ...state,
-            status: STATUS.idle,
-            baseAudio: { audioURL, duration, name: "BASE", element: baseAudio },
-            audios: [...state.audios, { audioURL, duration, name: `AUDIO-${state.audios.length + 1}` }]
+          setState(() => ({
+            ...newState,
+            baseAudio: { audioURL, duration, element: baseAudio },
           }))
         } else {
-          setState((state) => ({
-            ...state,
-            status: STATUS.idle,
-            audios: [...state.audios, { audioURL, duration, name: `AUDIO-${state.audios.length + 1}` }]
+          setState(() => ({
+            ...newState
           }))
         }
       }
