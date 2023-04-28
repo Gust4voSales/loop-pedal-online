@@ -72,6 +72,7 @@ function recordAudio() {
           status: STATUS.idle,
           audios: [...state.audios, { audioURL, duration, name: audioName, id: audioName }],
           audioCounter: state.audioCounter + 1,
+          disabled: true, // temporarily disable future commands
         }
 
         if (!state.baseAudio) {
