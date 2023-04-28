@@ -20,7 +20,6 @@ export type Store = {
   audioCounter: number
   status: STATUS
   baseAudio: BaseAudio | null
-  disabled: boolean
   targetExpression: TARGETS_EXPRESSIONS
   setTargetExpression: (newExpression: TARGETS_EXPRESSIONS) => void
   handleToggleRecordLoop: () => void
@@ -32,7 +31,6 @@ const useStore = create(
     audioCounter: 0,
     baseAudio: null,
     status: STATUS.idle,
-    disabled: false,
     targetExpression: 'surprised',
     setTargetExpression: (newExpression) => set({ targetExpression: newExpression }),
     handleToggleRecordLoop,

@@ -87,7 +87,7 @@ export function ExpressionDetectorCam() {
       if (detections.length > 0) {
         const currentExpression = detections[0].expressions.asSortedArray()[0].expression;
 
-        console.log(currentExpression);
+        // console.log(currentExpression);
 
         if (currentExpression === targetExpression) {
           handleToggleRecordLoop();
@@ -97,7 +97,7 @@ export function ExpressionDetectorCam() {
       }
     }, 100);
   };
-
+  0;
   return (
     <div className="relative">
       <video

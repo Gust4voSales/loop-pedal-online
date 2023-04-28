@@ -17,20 +17,15 @@ export enum STATUS {
   waiting,
 }
 
-const COMMAND_DELAY = 1000;
 let mediaRecorder: MediaRecorder
 
+const COMMAND_DELAY = 1000;
+let disabled = false
 function temporarilyDisableCommands() {
-  const setState = useStore.setState
-
-  setState({
-    disabled: true
-  })
+  disabled = true
 
   setTimeout(() => {
-    setState({
-      disabled: false
-    })
+    disabled = false
   }, COMMAND_DELAY);
 }
 
@@ -131,7 +126,7 @@ export async function handleToggleRecordLoop() {
   const state = useStore.getState()
   const setState = useStore.setState
 
-  if (state.disabled) return;
+  if (disabled) return;
 
   if (state.status === STATUS.idle) {
     const currentTime = state.baseAudio?.element.currentTime ?? 0;
@@ -157,4 +152,4 @@ export async function handleToggleRecordLoop() {
     stopRecording();
   }
   // waiting --> called when waiting, then do nothing
-}
+} 
