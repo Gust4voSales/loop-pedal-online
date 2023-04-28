@@ -18,19 +18,24 @@ export enum STATUS {
 }
 
 const COMMAND_DELAY = 1000;
+let disabled = false
 let mediaRecorder: MediaRecorder
 
-function temporarilyDisableCommands() {
-  const setState = useStore.setState
+// TODO maybe remove disable logic from store, it should not be a state (probably)
 
-  setState({
-    disabled: true
-  })
+function temporarilyDisableCommands() {
+  // const setState = useStore.setState
+
+  // setState({
+  //   disabled: true
+  // })
+  disabled = true
 
   setTimeout(() => {
-    setState({
-      disabled: false
-    })
+    // setState({
+    //   disabled: false
+    // })
+    disabled = false
   }, COMMAND_DELAY);
 }
 
@@ -77,6 +82,7 @@ function recordAudio() {
           status: STATUS.idle,
           audios: [...state.audios, { audioURL, duration, name: audioName, id: audioName }],
           audioCounter: state.audioCounter + 1,
+          disabled: true, // temporarily disable future commands
         }
 
         if (!state.baseAudio) {
@@ -93,6 +99,7 @@ function recordAudio() {
           setState(() => ({
             ...newState
           }))
+
         }
       }
 
@@ -131,7 +138,7 @@ export async function handleToggleRecordLoop() {
   const state = useStore.getState()
   const setState = useStore.setState
 
-  if (state.disabled) return;
+  if (disabled) return;
 
   if (state.status === STATUS.idle) {
     const currentTime = state.baseAudio?.element.currentTime ?? 0;
@@ -157,4 +164,4 @@ export async function handleToggleRecordLoop() {
     stopRecording();
   }
   // waiting --> called when waiting, then do nothing
-}
+} 
