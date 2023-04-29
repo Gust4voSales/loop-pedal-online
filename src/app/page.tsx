@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { MouseEvent, useState } from "react";
 import { ExpressionDetectorCam } from "@components/ExpressionDetectorCam";
 import { AudioPlayerCard } from "@src/components/AudioPlayerCard";
 import useLoopsStore, { EXPRESSIONS } from "@stores/LoopAudio";
@@ -22,6 +22,11 @@ export default function Home() {
       emoji: "😀",
     },
   ];
+
+  const handleToggleExpressionDetector = (e: MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.blur(); // blurring so that SHORTCUT actions (space) won't click this button
+    setUseExpressionDetector(!useExpressionDetector);
+  };
 
   return (
     <div className="w-full max-w-5xl mx-auto p-4 mt-4 bg-base-300 rounded-[var(--rounded-box)]">
@@ -79,7 +84,7 @@ export default function Home() {
 
         <div className="tooltip absolute right-0 top-0" data-tip="Ativar webcam">
           <button
-            onClick={() => setUseExpressionDetector(!useExpressionDetector)}
+            onClick={handleToggleExpressionDetector}
             className={`btn btn-ghost btn-circle swap ${!useExpressionDetector && "swap-active"}`}
           >
             <Webcam size={24} weight="fill" className="swap-on" />

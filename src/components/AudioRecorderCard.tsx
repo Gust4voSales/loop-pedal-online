@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import useLoopsStore from "@stores/LoopAudio";
 import { Hourglass, Microphone, Stop } from "@phosphor-icons/react";
 import { STATUS } from "@stores/LoopAudio/LoopAudio";
@@ -27,6 +27,20 @@ export function AudioRecorderCard() {
       baseAudio?.element.removeEventListener("timeupdate", updateBaseAudioProgress);
     };
   }, [baseAudio]);
+
+  const handleKeyPress = useCallback((event: KeyboardEvent) => {
+    if (event.code === "Space") {
+      handleToggleRecordLoop();
+    }
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyPress); // attach the event listener
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [handleKeyPress]);
 
   const updateBaseAudioProgress = () => {
     setCurrentProgress(baseAudio?.element.currentTime ?? 0);
@@ -83,7 +97,7 @@ export function AudioRecorderCard() {
         </div>
       </div>
       <span>
-        Pressione <kbd className="kbd kbd-sm">espaço</kbd> para iniciar
+        Pressione <kbd className="kbd kbd-sm">espaço</kbd> para {status === STATUS.idle ? "iniciar" : "parar"}
       </span>
     </div>
   );
