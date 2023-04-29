@@ -21,9 +21,7 @@ export function AudioRecorderCard() {
   const [baseAudioProgress, setCurrentProgress] = useState(0);
 
   useEffect(() => {
-    if (!baseAudio) return;
-
-    baseAudio.element.addEventListener("timeupdate", updateBaseAudioProgress);
+    if (baseAudio) baseAudio.element.addEventListener("timeupdate", updateBaseAudioProgress);
 
     return () => {
       baseAudio?.element.removeEventListener("timeupdate", updateBaseAudioProgress);

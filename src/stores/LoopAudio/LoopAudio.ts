@@ -17,10 +17,14 @@ export enum STATUS {
   waiting,
 }
 
+// VARIABLES
 let mediaRecorder: MediaRecorder
 
 const COMMAND_DELAY = 1000;
 let disabled = false
+
+
+// --LoopPedal logic START--
 function temporarilyDisableCommands() {
   disabled = true
 
@@ -29,16 +33,37 @@ function temporarilyDisableCommands() {
   }, COMMAND_DELAY);
 }
 
-const loopAudios = () => {
-  useStore.getState().audios.forEach((audio) => {
-    const audioEl = document.getElementById(audio.name) as HTMLAudioElement | null;
+export async function handleToggleRecordLoop() {
+  const state = useStore.getState()
+  const setState = useStore.setState
 
-    if (audioEl) {
-      audioEl.currentTime = 0;
-      audioEl.play();
-    }
-  });
-};
+  if (disabled) return;
+
+  if (state.status === STATUS.idle) {
+    const currentTime = state.baseAudio?.element.currentTime ?? 0;
+    const maxDuration = state.baseAudio?.duration ?? 0
+
+    temporarilyDisableCommands();
+
+    setState({
+      status: STATUS.waiting
+    })
+
+    // schedule the recording when the baseAudio starts looping (when baseAudio is not set, it schedules for now)
+    setTimeout(() => {
+      setState({
+        status: STATUS.recording
+      })
+
+      recordAudio();
+    }, (maxDuration - currentTime) * 1000);
+  } else if (state.status === STATUS.recording) {
+    temporarilyDisableCommands();
+
+    stopRecording();
+  }
+  // waiting --> called when waiting, then do nothing
+}
 
 function recordAudio() {
   const state = useStore.getState()
@@ -81,6 +106,9 @@ function recordAudio() {
           baseAudio.loop = true
           baseAudio.play()
 
+          // element needs to be added to the dom, so that we can remove (if the user wants) it later
+          document.getElementsByTagName('body')[0].appendChild(baseAudio)
+
           setState(() => ({
             ...newState,
             baseAudio: { audioURL, duration, element: baseAudio },
@@ -98,10 +126,11 @@ function recordAudio() {
 
         setTimeout(() => {
           stopRecording();
-        }, (state.baseAudio!.duration - currentTime) * 1000);
+        }, (state.baseAudio.duration - currentTime) * 1000);
       }
     })
-    .catch(() => {
+    .catch((err) => {
+      console.log(err)
       alert("Não foi possível acessar o microfone. Garanta a permissão antes.");
       // setError
     });
@@ -115,7 +144,19 @@ function stopRecording() {
     track.stop();
   });
 }
+// --LoopPedal logic END--
 
+// LoopAudio syncronization
+const loopAudios = () => {
+  useStore.getState().audios.forEach((audio) => {
+    const audioEl = document.getElementById(audio.name) as HTMLAudioElement | null;
+
+    if (audioEl) {
+      audioEl.currentTime = 0;
+      audioEl.play();
+    }
+  });
+};
 export function syncLoopAudiosWithBase() {
   const baseAudio = useStore.getState().baseAudio
 
@@ -123,34 +164,21 @@ export function syncLoopAudiosWithBase() {
   baseAudio?.element.addEventListener("playing", loopAudios);
 }
 
-export async function handleToggleRecordLoop() {
+// Loops functions
+export function removeLoop(id: string) {
   const state = useStore.getState()
-  const setState = useStore.setState
 
-  if (disabled) return;
-
-  if (state.status === STATUS.idle) {
-    const currentTime = state.baseAudio?.element.currentTime ?? 0;
-    const maxDuration = state.baseAudio?.duration ?? 0
-
-    temporarilyDisableCommands();
-
-    setState({
-      status: STATUS.waiting
+  if (state.audios.length > 1) {
+    useStore.setState({
+      audios: state.audios.filter(loop => loop.id !== id)
     })
+  } else { // last audio being
+    state.baseAudio?.element.remove()
 
-    // schedule the recording when the baseAudio starts looping (when baseAudio is not set, it schedules for now)
-    setTimeout(() => {
-      setState({
-        status: STATUS.recording
-      })
-
-      recordAudio();
-    }, (maxDuration - currentTime) * 1000);
-  } else if (state.status === STATUS.recording) {
-    temporarilyDisableCommands();
-
-    stopRecording();
+    useStore.setState({
+      audios: state.audios.filter(loop => loop.id !== id),
+      baseAudio: null // if the last loop's been removed, remove the baseAudio as well
+    })
   }
-  // waiting --> called when waiting, then do nothing
+
 } 

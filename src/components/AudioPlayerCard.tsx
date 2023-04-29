@@ -2,18 +2,24 @@
 
 import { FocusEvent, SyntheticEvent, useState } from "react";
 import useToggle from "@src/hooks/useToggle";
-import { SpeakerSimpleHigh, SpeakerSimpleSlash } from "@phosphor-icons/react";
-import { LoopAudio } from "@stores/LoopAudio/LoopAudio";
+import { SpeakerSimpleHigh, SpeakerSimpleSlash, TrashSimple } from "@phosphor-icons/react";
+import { LoopAudio, STATUS } from "@stores/LoopAudio/LoopAudio";
+import useLoopStore from "@stores/LoopAudio";
 
 interface Props {
   audioLoop: LoopAudio;
 }
 export function AudioPlayerCard({ audioLoop }: Props) {
+  const [status, removeLoop] = useLoopStore((state) => [state.status, state.removeLoop]);
   const [muted, toggleMuted] = useToggle(false);
   const [currentProgress, setCurrentProgress] = useState(0);
 
   const updateCurrentProgress = (e: SyntheticEvent<HTMLAudioElement, Event>) => {
     setCurrentProgress(e.currentTarget.currentTime);
+  };
+
+  const handleRemoveLoop = () => {
+    removeLoop(audioLoop.id);
   };
 
   return (
@@ -25,10 +31,21 @@ export function AudioPlayerCard({ audioLoop }: Props) {
         </button>
 
         <div className="w-full">
-          <input
-            defaultValue={audioLoop.name}
-            className="input input-ghost px-1 h-6 w-full cursor-pointer focus:cursor-text"
-          />
+          <div className="flex gap-2 items-center">
+            <input
+              defaultValue={audioLoop.name}
+              onFocus={(e) => e.target.select()}
+              className="input input-ghost px-1 h-6 w-full cursor-pointer focus:cursor-text"
+            />
+            <button
+              data-tip="Ativar webcam"
+              onClick={handleRemoveLoop}
+              className="tooltip h-min w-min hover:text-error transition-colors"
+              disabled={status !== STATUS.idle}
+            >
+              <TrashSimple size={18} weight="fill" />
+            </button>
+          </div>
           <progress className="progress progress-primary w-full" value={currentProgress} max={audioLoop.duration} />
         </div>
       </div>

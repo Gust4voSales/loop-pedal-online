@@ -80,7 +80,7 @@ export default function Home() {
         <div className="tooltip absolute right-0 top-0" data-tip="Ativar webcam">
           <button
             onClick={() => setUseExpressionDetector(!useExpressionDetector)}
-            className={`btn btn-ghost btn-circle  swap ${!useExpressionDetector && "swap-active"}`}
+            className={`btn btn-ghost btn-circle swap ${!useExpressionDetector && "swap-active"}`}
           >
             <Webcam size={24} weight="fill" className="swap-on" />
             <WebcamSlash size={24} weight="fill" className="swap-off" />
