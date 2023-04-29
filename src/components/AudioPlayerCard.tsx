@@ -38,7 +38,7 @@ export function AudioPlayerCard({ audioLoop }: Props) {
               className="input input-ghost px-1 h-6 w-full cursor-pointer focus:cursor-text"
             />
             <button
-              data-tip="Ativar webcam"
+              data-tip="Remover loop"
               onClick={handleRemoveLoop}
               className="tooltip h-min w-min hover:text-error transition-colors"
               disabled={status !== STATUS.idle}
