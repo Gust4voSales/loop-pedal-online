@@ -23,6 +23,8 @@ export type Store = {
   baseAudio: BaseAudio | null
   targetExpression: TARGETS_EXPRESSIONS
   setTargetExpression: (newExpression: TARGETS_EXPRESSIONS) => void
+  isEditingLoopName: boolean // flag to indicate editing input is active, so don't trigger Space shortcut
+  setIsEditingLoopName: (value: boolean) => void
   handleToggleRecordLoop: () => void
 }
 
@@ -35,6 +37,8 @@ const useStore = create(
     status: STATUS.idle,
     targetExpression: 'surprised',
     setTargetExpression: (newExpression) => set({ targetExpression: newExpression }),
+    isEditingLoopName: false,
+    setIsEditingLoopName: (value) => set({ isEditingLoopName: value }),
     handleToggleRecordLoop,
   }))
 )

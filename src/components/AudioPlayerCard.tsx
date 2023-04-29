@@ -10,7 +10,11 @@ interface Props {
   audioLoop: LoopAudio;
 }
 export function AudioPlayerCard({ audioLoop }: Props) {
-  const [status, removeLoop] = useLoopStore((state) => [state.status, state.removeLoop]);
+  const [status, removeLoop, setIsEditingLoopName] = useLoopStore((state) => [
+    state.status,
+    state.removeLoop,
+    state.setIsEditingLoopName,
+  ]);
   const [muted, toggleMuted] = useToggle(false);
   const [currentProgress, setCurrentProgress] = useState(0);
 
@@ -20,6 +24,11 @@ export function AudioPlayerCard({ audioLoop }: Props) {
 
   const handleRemoveLoop = () => {
     removeLoop(audioLoop.id);
+  };
+
+  const handleFocusLoopNameInput = (e: FocusEvent<HTMLInputElement>) => {
+    e.target.select(); // select all text
+    setIsEditingLoopName(true); // set editingLoopName flag
   };
 
   return (
@@ -34,7 +43,8 @@ export function AudioPlayerCard({ audioLoop }: Props) {
           <div className="flex gap-2 items-center">
             <input
               defaultValue={audioLoop.name}
-              onFocus={(e) => e.target.select()}
+              onFocus={handleFocusLoopNameInput}
+              onBlur={() => setIsEditingLoopName(false)}
               className="input input-ghost px-1 h-6 w-full cursor-pointer focus:cursor-text"
             />
             <button

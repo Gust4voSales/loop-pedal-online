@@ -13,10 +13,11 @@ const ButtonIcon = ({ status }: { status: STATUS }) => {
 };
 
 export function AudioRecorderCard() {
-  const [status, baseAudio, handleToggleRecordLoop] = useLoopsStore((state) => [
+  const [status, baseAudio, handleToggleRecordLoop, isEditingLoopName] = useLoopsStore((state) => [
     state.status,
     state.baseAudio,
     state.handleToggleRecordLoop,
+    state.isEditingLoopName,
   ]);
   const [baseAudioProgress, setCurrentProgress] = useState(0);
 
@@ -28,11 +29,14 @@ export function AudioRecorderCard() {
     };
   }, [baseAudio]);
 
-  const handleKeyPress = useCallback((event: KeyboardEvent) => {
-    if (event.code === "Space") {
-      handleToggleRecordLoop();
-    }
-  }, []);
+  const handleKeyPress = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.code === "Space" && !isEditingLoopName) {
+        handleToggleRecordLoop();
+      }
+    },
+    [isEditingLoopName]
+  );
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeyPress); // attach the event listener
