@@ -9,7 +9,9 @@ import { Info, Webcam, WebcamSlash } from "@phosphor-icons/react";
 import { Props as TargetExpression, TargetExpressionButton } from "@components/TargetExpressionButton";
 import Image from "next/image";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import Logo from "../../public/Logo.png";
+import Logo from "../../public/LogoSmall.png";
+import Title from "../../public/LogoTitle.png";
+import BgWave from "../../public/BgWave.svg";
 
 export default function Home() {
   const loopsAudioStore = useLoopsStore();
@@ -53,15 +55,18 @@ export default function Home() {
     );
 
   return (
-    <div className="flex flex-col items-center animate-fade-bottom">
-      <Image
-        alt="Logo - LoopPedalOnline"
-        src={Logo}
-        onClick={() => setShowLoopPedal(false)}
-        className="w-60 h-auto cursor-pointer"
-      />
+    <div className="flex flex-col items-center gap-4">
+      <div className="flex relative mt-4 items-center justify-center">
+        <Image alt="Background Logo" src={BgWave} className="w-full h-auto animate-blur" />
+        <Image
+          alt="Logo - LoopPedalOnline"
+          src={Title}
+          onClick={() => setShowLoopPedal(false)}
+          className="absolute w-auto h-full min-h-[80px] cursor-pointer"
+        />
+      </div>
 
-      <div className="w-full max-w-5xl mx-auto p-4 mt-4 bg-base-300 rounded-[var(--rounded-box)]">
+      <div className="w-full max-w-5xl mx-auto p-4 mt-4 bg-base-300 rounded-[var(--rounded-box)] animate-fade-bottom">
         <div className="relative flex flex-col gap-4 items-center w-full">
           <div className="flex gap-5">
             {useExpressionDetector && <ExpressionDetectorCam />}
