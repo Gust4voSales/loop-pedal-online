@@ -71,8 +71,9 @@ function recordAudio() {
 
   navigator.mediaDevices
     .getUserMedia({
+      video: false,
       audio: {
-        echoCancellation: false, // prevent playng audios from interfering
+        echoCancellation: false, // prevent playing audios from interfering
         noiseSuppression: true, // TODO add as option
       },
     })
