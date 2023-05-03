@@ -50,7 +50,7 @@ export function AudioPlayerCard({ audioLoop }: Props) {
             <button
               data-tip="Remover loop"
               onClick={handleRemoveLoop}
-              className="tooltip h-min w-min hover:text-error transition-colors"
+              className="tooltip h-min w-min hover:text-error disabled:cursor-not-allowed disabled:hover:text-current transition-colors"
               disabled={status !== STATUS.idle}
             >
               <TrashSimple size={18} weight="fill" />

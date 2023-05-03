@@ -8,7 +8,7 @@ import { STATUS } from "@stores/LoopAudio/LoopAudio";
 
 export function ExpressionDetectorCam() {
   const EXPRESSIONS_EMOJIS = {
-    "": "...",
+    "": "❌",
     neutral: "😐",
     happy: "😀",
     sad: "☹",
@@ -37,6 +37,7 @@ export function ExpressionDetectorCam() {
         faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL),
       ]).then(startVideo);
     };
+
     console.log("Load models");
     loadModels();
   }, []);
@@ -52,7 +53,12 @@ export function ExpressionDetectorCam() {
 
   const startVideo = () => {
     navigator.mediaDevices
-      .getUserMedia({ video: {} })
+      .getUserMedia({
+        video: {
+          facingMode: "user",
+        },
+        audio: false,
+      })
       .then((stream) => {
         camMediaStream.current = stream;
         let video = videoRef.current!;
@@ -80,35 +86,37 @@ export function ExpressionDetectorCam() {
     if (!videoRef.current) return;
 
     intervalDetection.current = setInterval(async () => {
-      const detections = await faceapi
-        .detectAllFaces(videoRef.current!, new faceapi.TinyFaceDetectorOptions())
+      const detection = await faceapi
+        .detectSingleFace(videoRef.current!, new faceapi.TinyFaceDetectorOptions())
         .withFaceExpressions();
 
-      if (detections.length > 0) {
-        const currentExpression = detections[0].expressions.asSortedArray()[0].expression;
-
-        // console.log(currentExpression);
+      console.log(detection);
+      if (detection) {
+        const currentExpression = detection.expressions.asSortedArray()[0].expression;
 
         if (currentExpression === targetExpression) {
           handleToggleRecordLoop();
         }
 
         setLastExpression(currentExpression);
+      } else {
+        setLastExpression("");
       }
     }, 100);
   };
-  0;
+
   return (
     <div className="relative">
       <video
         ref={videoRef}
-        className={cx("w-60 h-auto rounded-[--rounded-box] border-2", {
+        className={cx("w-60 min-h-[170px] h-auto rounded-[--rounded-box] border-2 animate-blur", {
           "border-primary": status === STATUS.recording,
           "border-transparent": status !== STATUS.recording,
+          "bg-base-100": videoRef.current === null,
         })}
         muted
       />
-      <span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-3xl">
+      <span className="absolute bottom-[2.5%] left-1/2 -translate-x-1/2 text-3xl">
         {EXPRESSIONS_EMOJIS[lastExpression as keyof typeof EXPRESSIONS_EMOJIS]}
       </span>
     </div>

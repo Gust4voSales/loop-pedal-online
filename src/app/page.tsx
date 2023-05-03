@@ -43,8 +43,9 @@ export default function Home() {
           <div className="max-w-md">
             <h1 className="text-5xl font-bold">LoopPedal Online</h1>
             <p className="py-6">
-              Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem quasi. In
-              deleniti eaque aut repudiandae et a id nisi.
+              Simulador de Loop Pedal com controle intuitivo através de expressões faciais capturadas pela webcam. Além
+              de músicas, você pode usar para criar sons, efeitos sonoros e até mesmo narrativas envolventes para suas
+              apresentações. Experimente agora e libere sua criatividade!
             </p>
             <button onClick={() => setShowLoopPedal(true)} className="btn btn-primary">
               Começar
