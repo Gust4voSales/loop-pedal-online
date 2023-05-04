@@ -1,3 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer {
+  button:disabled {
+    cursor: not-allowed;
+    opacity: 0.2;
+  }
+}
+
+.btn:disabled {
+  @apply cursor-not-allowed opacity-20;
+}

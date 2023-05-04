@@ -182,4 +182,10 @@ export function removeLoop(id: string) {
     })
   }
 
+}
+
+export function restartLoops() {
+  const baseAudio = useStore.getState().baseAudio
+  if (baseAudio)
+    baseAudio.element.currentTime = 0
 } 

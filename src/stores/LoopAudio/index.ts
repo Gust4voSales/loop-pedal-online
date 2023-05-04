@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { subscribeWithSelector } from 'zustand/middleware'
-import { BaseAudio, LoopAudio, STATUS, handleToggleRecordLoop, removeLoop, syncLoopAudiosWithBase } from "./LoopAudio";
+import { BaseAudio, LoopAudio, STATUS, handleToggleRecordLoop, restartLoops, removeLoop, syncLoopAudiosWithBase } from "./LoopAudio";
 
 export type TARGETS_EXPRESSIONS = 'surprised' | 'happy'
 
@@ -17,13 +17,14 @@ export const EXPRESSIONS: { id: TARGETS_EXPRESSIONS, text: string }[] = [
 
 export type Store = {
   audios: LoopAudio[]
-  removeLoop: (id: string) => void
   audioCounter: number
   status: STATUS
   baseAudio: BaseAudio | null
   targetExpression: TARGETS_EXPRESSIONS
-  setTargetExpression: (newExpression: TARGETS_EXPRESSIONS) => void
   isEditingLoopName: boolean // flag to indicate editing input is active, so don't trigger Space shortcut
+  removeLoop: (id: string) => void
+  restartLoops: () => void
+  setTargetExpression: (newExpression: TARGETS_EXPRESSIONS) => void
   setIsEditingLoopName: (value: boolean) => void
   handleToggleRecordLoop: () => void
 }
@@ -31,13 +32,14 @@ export type Store = {
 const useStore = create(
   subscribeWithSelector<Store>((set) => ({
     audios: [],
-    removeLoop: removeLoop,
-    audioCounter: 0,
     baseAudio: null,
     status: STATUS.idle,
     targetExpression: 'surprised',
-    setTargetExpression: (newExpression) => set({ targetExpression: newExpression }),
+    audioCounter: 0,
     isEditingLoopName: false,
+    removeLoop: removeLoop,
+    restartLoops: restartLoops,
+    setTargetExpression: (newExpression) => set({ targetExpression: newExpression }),
     setIsEditingLoopName: (value) => set({ isEditingLoopName: value }),
     handleToggleRecordLoop,
   }))

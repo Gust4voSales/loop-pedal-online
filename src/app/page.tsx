@@ -5,16 +5,23 @@ import { ExpressionDetectorCam } from "@components/ExpressionDetectorCam";
 import { AudioPlayerCard } from "@src/components/AudioPlayerCard";
 import useLoopsStore, { EXPRESSIONS } from "@stores/LoopAudio";
 import { AudioRecorderCard } from "@components/AudioRecorderCard";
-import { Info, Webcam, WebcamSlash } from "@phosphor-icons/react";
+import { Info, ArrowClockwise, Webcam, WebcamSlash } from "@phosphor-icons/react";
 import { Props as TargetExpression, TargetExpressionButton } from "@components/TargetExpressionButton";
 import Image from "next/image";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import Logo from "../../public/LogoSmall.png";
 import Title from "../../public/LogoTitle.png";
 import BgWave from "../../public/BgWave.svg";
+import { TooltipButton } from "@components/TooltipButton";
+import { STATUS } from "@stores/LoopAudio/LoopAudio";
 
 export default function Home() {
-  const loopsAudioStore = useLoopsStore();
+  const [status, loopAudios, targetExpression, restartLoops] = useLoopsStore((state) => [
+    state.status,
+    state.audios,
+    state.targetExpression,
+    state.restartLoops,
+  ]);
   const [parent] = useAutoAnimate();
   const [showLoopPedal, setShowLoopPedal] = useState(false);
   const [useExpressionDetector, setUseExpressionDetector] = useState(false);
@@ -81,7 +88,7 @@ export default function Home() {
                   <span>
                     Expressão de{" "}
                     <span className="font-semibold uppercase">
-                      {EXPRESSIONS.find((e) => e.id === loopsAudioStore.targetExpression)?.text}
+                      {EXPRESSIONS.find((e) => e.id === targetExpression)?.text}
                     </span>
                   </span>
                   <div className="flex">
@@ -105,11 +112,11 @@ export default function Home() {
           </div>
 
           <div ref={parent} className="w-full p-1 mx-auto flex gap-2 flex-wrap">
-            {loopsAudioStore.audios.map((loop) => (
+            {loopAudios.map((loop) => (
               <AudioPlayerCard audioLoop={loop} key={loop.name} />
             ))}
 
-            {loopsAudioStore.audios.length === 0 && (
+            {loopAudios.length === 0 && (
               <div className="alert shadow-lg ">
                 <div className="prose mx-auto">
                   <Info size={24} weight="fill" />
@@ -119,14 +126,26 @@ export default function Home() {
             )}
           </div>
 
-          <div className="tooltip absolute right-0 top-0" data-tip="Ativar webcam">
-            <button
+          <div className="absolute right-0 top-0 flex flex-col">
+            <TooltipButton
               onClick={handleToggleExpressionDetector}
               className={`btn btn-ghost btn-circle swap ${!useExpressionDetector && "swap-active"}`}
+              tooltip="Ativar webcam"
             >
               <Webcam size={24} weight="fill" className="swap-on" />
               <WebcamSlash size={24} weight="fill" className="swap-off" />
-            </button>
+            </TooltipButton>
+
+            {loopAudios.length > 0 && (
+              <TooltipButton
+                onClick={restartLoops}
+                className="btn btn-ghost btn-circle"
+                tooltip="Reiniciar loops"
+                disabled={status !== STATUS.idle}
+              >
+                <ArrowClockwise size={24} weight="fill" />
+              </TooltipButton>
+            )}
           </div>
         </div>
       </div>
