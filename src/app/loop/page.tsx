@@ -1,6 +1,6 @@
 "use client";
 
-import { MouseEvent, useState } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 import Image from "next/image";
 import { ExpressionDetectorCam } from "@components/ExpressionDetectorCam";
 import { AudioPlayerCard } from "@src/components/AudioPlayerCard";
@@ -34,6 +34,16 @@ export default function Loop() {
       emoji: "😀",
     },
   ];
+
+  // focusing tab resets playing audio, but baseAudio was not being reset
+  // to prevent the bug, resets everything on focus
+  useEffect(() => {
+    window.addEventListener("focus", restartLoops);
+
+    return () => {
+      window.removeEventListener("focus", restartLoops);
+    };
+  }, []);
 
   const handleToggleExpressionDetector = (e: MouseEvent<HTMLButtonElement>) => {
     e.currentTarget.blur(); // blurring so that SHORTCUT actions (space) won't click this button
