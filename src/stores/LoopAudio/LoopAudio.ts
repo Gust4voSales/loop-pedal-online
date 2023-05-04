@@ -1,5 +1,6 @@
 // LoopAudio Logic
 
+import { toast } from "react-hot-toast";
 import useStore from ".";
 
 export interface LoopAudio {
@@ -45,18 +46,13 @@ export async function handleToggleRecordLoop() {
 
     temporarilyDisableCommands();
 
-    setState({
-      status: STATUS.waiting
-    })
-
-    // schedule the recording when the baseAudio starts looping (when baseAudio is not set, it schedules for now)
-    setTimeout(() => {
+    if (mediaRecorder)
       setState({
-        status: STATUS.recording
+        status: STATUS.waiting
       })
 
-      recordAudio();
-    }, (maxDuration - currentTime) * 1000);
+    // schedule the recording when the baseAudio starts looping (when baseAudio is not set, it schedules for now)
+    setTimeout(recordAudio, (maxDuration - currentTime) * 1000);
   } else if (state.status === STATUS.recording) {
     temporarilyDisableCommands();
 
@@ -78,6 +74,10 @@ function recordAudio() {
       },
     })
     .then((stream) => {
+      setState({
+        status: STATUS.recording
+      })
+
       mediaRecorder = new MediaRecorder(stream);
 
       const startTime = new Date().getTime();
@@ -132,8 +132,7 @@ function recordAudio() {
     })
     .catch((err) => {
       console.log(err)
-      alert("Não foi possível acessar o microfone. Garanta a permissão antes.");
-      // setError
+      toast.error("Ocorreu algum problema ao tentar gravar o loop. Assegure-se de que a pemissão foi concedida.")
     });
 }
 

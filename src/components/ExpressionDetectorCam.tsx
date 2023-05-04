@@ -5,6 +5,7 @@ import * as faceapi from "face-api.js";
 import useLoopsStore from "@stores/LoopAudio";
 import cx from "classnames";
 import { STATUS } from "@stores/LoopAudio/LoopAudio";
+import toast from "react-hot-toast";
 
 export function ExpressionDetectorCam() {
   const EXPRESSIONS_EMOJIS = {
@@ -66,8 +67,8 @@ export function ExpressionDetectorCam() {
         video.play();
       })
       .catch((err) => {
-        console.error("error:", err);
-        alert(err);
+        console.error(err);
+        toast.error("Ocorreu algum problema ao acessar a webcam. Assegure-se de que a pemissão foi concedida.");
       });
   };
 
