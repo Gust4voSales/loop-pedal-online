@@ -109,14 +109,14 @@ export function ExpressionDetectorCam() {
     <div className="relative">
       <video
         ref={videoRef}
-        className={cx("w-60 min-h-[170px] h-auto rounded-[--rounded-box] border-2 animate-blur", {
+        className={cx("w-60 max-sm:w-52 h-auto rounded-[--rounded-box] border-2 animate-blur", {
           "border-primary": status === STATUS.recording,
           "border-transparent": status !== STATUS.recording,
-          "bg-base-100": videoRef.current === null,
+          "bg-base-100 min-h-[140px]": videoRef.current === null,
         })}
         muted
       />
-      <span className="absolute bottom-[2.5%] left-1/2 -translate-x-1/2 text-3xl">
+      <span className="absolute bottom-[2.5%] max-sm:bottom-[5%] left-1/2 -translate-x-1/2 text-3xl">
         {EXPRESSIONS_EMOJIS[lastExpression as keyof typeof EXPRESSIONS_EMOJIS]}
       </span>
     </div>

@@ -12,8 +12,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         {children}
 
-        <footer className="flex items-center justify-around p-4 bg-neutral text-neutral-content">
-          <div className="items-center">
+        <footer className="flex gap-2 items-center justify-between lg:justify-around max-sm:flex-col p-4 bg-neutral text-neutral-content">
+          <div>
             <p className="flex items-center gap-2">
               <span className="font-bold text-3xl">♠</span>
               <span>

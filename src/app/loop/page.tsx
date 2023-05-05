@@ -52,16 +52,16 @@ export default function Loop() {
 
   return (
     <div className="min-h-screen flex flex-col items-center gap-4">
-      <div className="flex relative mt-4 items-center justify-center">
+      <div className="flex relative mt-4 items-center justify-center min-h-[120px]">
         <Image alt="Background Logo" src={BgWave} className="w-full h-auto animate-blur" priority />
-        <Link href="/" className="absolute w-auto h-full min-h-[80px]">
+        <Link href="/" className="absolute w-auto h-full min-h-[120px] ">
           <Image alt="Logo - LoopPedalOnline" src={Title} className="w-full h-full" />
         </Link>
       </div>
 
-      <div className="w-full max-w-5xl mx-auto p-4 mt-4 bg-base-300 rounded-[var(--rounded-box)] animate-fade-bottom">
-        <div className="relative flex flex-col gap-4 items-center w-full">
-          <div className="flex gap-5">
+      <div className="w-full max-w-5xl p-4 m-4 bg-base-300 rounded-[--rounded-box] max-lg:w-[calc(100%-theme(spacing.4))] animate-fade-bottom">
+        <div className="relative flex flex-col gap-4 items-center w-full max-[360px]:items-start">
+          <div className="flex gap-5 flex-col md:flex-row">
             {useExpressionDetector && <ExpressionDetectorCam />}
 
             <div>
@@ -77,7 +77,7 @@ export default function Loop() {
                       {EXPRESSIONS.find((e) => e.id === targetExpression)?.text}
                     </span>
                   </span>
-                  <div className="flex">
+                  <div className="flex gap-1">
                     {targetsExpressions.map((target) => (
                       <TargetExpressionButton
                         key={target.expression}
@@ -97,7 +97,7 @@ export default function Loop() {
             </div>
           </div>
 
-          <div ref={parent} className="w-full p-1 mx-auto flex gap-2 flex-wrap">
+          <div ref={parent} className="w-full p-1 mx-auto flex gap-2 flex-wrap max-lg:justify-center max-lg:gap-4">
             {loopAudios.map((loop) => (
               <AudioPlayerCard audioLoop={loop} key={loop.name} />
             ))}
@@ -112,7 +112,7 @@ export default function Loop() {
             )}
           </div>
 
-          <div className="absolute right-0 top-0 flex flex-col">
+          <div className="absolute right-0 max-sm:-right-2 top-0 flex flex-col">
             <TooltipButton
               onClick={handleToggleExpressionDetector}
               className={`btn btn-ghost btn-circle swap ${!useExpressionDetector && "swap-active"}`}

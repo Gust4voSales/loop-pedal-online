@@ -32,7 +32,7 @@ export function AudioPlayerCard({ audioLoop }: Props) {
   };
 
   return (
-    <div className="w-60 flex p-2 bg-base-200 rounded-[var(--rounded-btn)] shadow-xl prose">
+    <div className="w-60 max-sm:w-56 flex p-2 bg-base-200 rounded-[var(--rounded-btn)] shadow-xl prose">
       <div className="w-full flex items-center gap-2">
         <button className={`btn btn-circle swap ${!muted && "swap-active"}`}>
           <SpeakerSimpleHigh size={32} onClick={toggleMuted} className="swap-on" />

@@ -46,7 +46,7 @@ export async function handleToggleRecordLoop() {
 
     temporarilyDisableCommands();
 
-    if (mediaRecorder)
+    if (mediaRecorder && currentTime > 0)
       setState({
         status: STATUS.waiting
       })

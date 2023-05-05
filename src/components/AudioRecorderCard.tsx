@@ -61,7 +61,7 @@ export function AudioRecorderCard() {
     <div className="flex w-fit flex-col items-center">
       <div
         className={cx(
-          "w-60 flex p-2 rounded-[var(--rounded-btn)] shadow-xl prose",
+          "w-60 max-sm:w-52 flex p-2 rounded-[var(--rounded-btn)] shadow-xl prose",
           { "bg-base-200": status === STATUS.idle },
           { "bg-neutral": status === STATUS.waiting },
           { "bg-primary": status === STATUS.recording }
