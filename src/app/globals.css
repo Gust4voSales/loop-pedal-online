@@ -2,10 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer {
+@layer components {
   button:disabled {
     cursor: not-allowed;
     opacity: 0.2;
+  }
+
+  .gradient-text {
+    @apply text-transparent bg-gradient-to-r from-secondary to-primary bg-clip-text;
   }
 }
 

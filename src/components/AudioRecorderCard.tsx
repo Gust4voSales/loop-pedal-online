@@ -32,6 +32,7 @@ export function AudioRecorderCard() {
   const handleKeyPress = useCallback(
     (event: KeyboardEvent) => {
       if (event.code === "Space" && !isEditingLoopName) {
+        event.preventDefault();
         handleToggleRecordLoop();
       }
     },

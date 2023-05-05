@@ -172,11 +172,12 @@ export function removeLoop(id: string) {
     useStore.setState({
       audios: state.audios.filter(loop => loop.id !== id)
     })
-  } else { // last audio being
+  } else { // last audio being removed
     state.baseAudio?.element.remove()
 
     useStore.setState({
-      audios: state.audios.filter(loop => loop.id !== id),
+      audios: [],
+      audioCounter: 0,
       baseAudio: null // if the last loop's been removed, remove the baseAudio as well
     })
   }

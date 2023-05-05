@@ -36,7 +36,7 @@ export default function Loop() {
   ];
 
   // focusing tab resets playing audio, but baseAudio was not being reset
-  // to prevent the bug, resets everything on focus
+  // to prevent the bug, restart all loops on focus
   useEffect(() => {
     window.addEventListener("focus", restartLoops);
 
@@ -51,9 +51,9 @@ export default function Loop() {
   };
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="min-h-screen flex flex-col items-center gap-4">
       <div className="flex relative mt-4 items-center justify-center">
-        <Image alt="Background Logo" src={BgWave} className="w-full h-auto animate-blur" />
+        <Image alt="Background Logo" src={BgWave} className="w-full h-auto animate-blur" priority />
         <Link href="/" className="absolute w-auto h-full min-h-[80px]">
           <Image alt="Logo - LoopPedalOnline" src={Title} className="w-full h-full" />
         </Link>
@@ -93,7 +93,7 @@ export default function Loop() {
 
           <div className="divider">
             <div className="prose">
-              <h3>LOOPS</h3>
+              <h3 className="gradient-text">LOOPS</h3>
             </div>
           </div>
 
