@@ -6,6 +6,7 @@ import useLoopsStore from "@stores/LoopAudio";
 import cx from "classnames";
 import { STATUS } from "@stores/LoopAudio/LoopAudio";
 import toast from "react-hot-toast";
+import { ExpressionDetectorTutorialModal } from "./ExpressionDetectorTutorialModal";
 
 export function ExpressionDetectorCam() {
   const EXPRESSIONS_EMOJIS = {

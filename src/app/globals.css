@@ -5,7 +5,7 @@
 @layer components {
   button:disabled {
     cursor: not-allowed;
-    opacity: 0.2;
+    opacity: 0.7;
   }
 
   .gradient-text {
@@ -14,5 +14,5 @@
 }
 
 .btn:disabled {
-  @apply cursor-not-allowed opacity-20;
+  @apply cursor-not-allowed opacity-70;
 }

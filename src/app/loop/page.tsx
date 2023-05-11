@@ -14,6 +14,7 @@ import BgWave from "@public/BgWave.svg";
 import { TooltipButton } from "@components/TooltipButton";
 import { STATUS } from "@stores/LoopAudio/LoopAudio";
 import Link from "next/link";
+import { ExpressionDetectorTutorialModal } from "@components/ExpressionDetectorTutorialModal";
 
 export default function Loop() {
   const [status, loopAudios, targetExpression, restartLoops] = useLoopsStore((state) => [
@@ -112,7 +113,7 @@ export default function Loop() {
             )}
           </div>
 
-          <div className="absolute right-0 max-sm:-right-2 top-0 flex flex-col">
+          <div className="absolute right-0 max-sm:-right-2 top-0 flex flex-col gap-1">
             <TooltipButton
               onClick={handleToggleExpressionDetector}
               className={`btn btn-ghost btn-circle swap ${!useExpressionDetector && "swap-active"}`}
@@ -132,6 +133,8 @@ export default function Loop() {
                 <ArrowClockwise size={24} weight="fill" />
               </TooltipButton>
             )}
+
+            {useExpressionDetector && <ExpressionDetectorTutorialModal />}
           </div>
         </div>
       </div>
