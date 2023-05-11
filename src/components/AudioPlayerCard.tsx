@@ -3,7 +3,7 @@
 import { FocusEvent, SyntheticEvent, useState } from "react";
 import useToggle from "@src/hooks/useToggle";
 import { SpeakerSimpleHigh, SpeakerSimpleSlash, TrashSimple } from "@phosphor-icons/react";
-import { LoopAudio, STATUS } from "@stores/LoopAudio/LoopAudio";
+import { EXTRAPOLATED_DURATION_DELAY, LoopAudio, STATUS } from "@stores/LoopAudio/LoopAudio";
 import useLoopStore from "@stores/LoopAudio";
 
 interface Props {
@@ -56,7 +56,11 @@ export function AudioPlayerCard({ audioLoop }: Props) {
               <TrashSimple size={18} weight="fill" />
             </button>
           </div>
-          <progress className="progress progress-primary w-full" value={currentProgress} max={audioLoop.duration} />
+          <progress
+            className="progress progress-primary w-full"
+            value={currentProgress}
+            max={audioLoop.duration - EXTRAPOLATED_DURATION_DELAY}
+          />
         </div>
       </div>
 

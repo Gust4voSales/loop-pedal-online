@@ -30,7 +30,7 @@ const steps = [
   },
 ];
 export function ExpressionDetectorTutorialModal() {
-  const [isOpen, toggleOpen] = useToggle(true);
+  const [isOpen, toggleOpen] = useToggle(false);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const currentStep = steps[currentStepIndex];
 

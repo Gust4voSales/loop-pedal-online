@@ -21,6 +21,11 @@ export enum STATUS {
 // VARIABLES
 let mediaRecorder: MediaRecorder
 
+/* the duration of the song is calculated by the difference of the time when the recording started with it stopped
+   there is a certain delay between the actions which results in the actual audio duration being around 
+   "EXTRAPOLATED_DURATION_DELAY" shorter then the actual duration. */
+export const EXTRAPOLATED_DURATION_DELAY = 0.200
+
 const COMMAND_DELAY = 1000;
 let disabled = false
 
