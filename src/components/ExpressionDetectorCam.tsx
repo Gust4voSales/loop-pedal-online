@@ -5,8 +5,8 @@ import * as faceapi from "face-api.js";
 import useLoopsStore from "@stores/LoopAudio";
 import cx from "classnames";
 import { STATUS } from "@stores/LoopAudio/LoopAudio";
-import toast from "react-hot-toast";
-import { ExpressionDetectorTutorialModal } from "./ExpressionDetectorTutorialModal";
+import { toast } from "react-hot-toast";
+import { Info } from "@phosphor-icons/react";
 
 export function ExpressionDetectorCam() {
   const EXPRESSIONS_EMOJIS = {
@@ -31,6 +31,20 @@ export function ExpressionDetectorCam() {
   const intervalDetection = useRef<NodeJS.Timer | null>(null);
 
   useEffect(() => {
+    toast.dismiss();
+    toast(
+      "A detecção de expressões demanda mais recursos, o que pode causar travamentos em celulares e outros dispositivos mais limitados.",
+      {
+        duration: 8000,
+        icon: <Info size={60} />,
+      }
+    );
+
+    if (faceapi.nets.tinyFaceDetector.isLoaded && faceapi.nets.faceExpressionNet.isLoaded) {
+      startVideo();
+      return;
+    }
+
     const loadModels = async () => {
       const MODEL_URL = "/face-api-models";
 
@@ -40,7 +54,6 @@ export function ExpressionDetectorCam() {
       ]).then(startVideo);
     };
 
-    console.log("Load models");
     loadModels();
   }, []);
 
