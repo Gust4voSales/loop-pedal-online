@@ -13,6 +13,7 @@ A Loop Pedal simulator with intuitive control through facial expressions capture
 ## 💻 Techs
 - **Typescript** — A strongly typed programming language that builds on JavaScript
 - **NextJS** — React's framework
+- **zustand** — A small, fast and scalable bearbones state-management solution using simplified flux principles
 - **face-api** — JavaScript API for face detection and face recognition in the browser implemented on top of the tensorflow.js core API
 - **tailwindcss** — Utility-first CSS framework
 - **daisyUI** — The most popular component library for Tailwind CSS
